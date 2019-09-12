@@ -19,7 +19,7 @@ plugins {
     id "com.gorylenko.gradle-git-properties" version "1.4.17"
 }
 
-version "0.6.5"
+version "0.7.0-SNAPSHOT"
 group "au.org.ala"
 
 apply plugin:"eclipse"
@@ -94,7 +94,27 @@ dependencies {
     compile files('lib/jade.jar')
 }
 
+// Based on https://github.com/gradle/gradle/issues/1989 and https://tuhrig.de/gradles-bootrun-and-windows-command-length-limit/ and 
+// Enhanced to handle spaces in the paths as described on https://stackoverflow.com/questions/18659774/how-do-i-handle-files-with-spaces-in-the-classpath-in-manifest-mf
+task pathingJarForWindows(type: Jar) {
+    dependsOn configurations.runtime
+    appendix = 'pathing'
+ 
+    doFirst {
+        manifest {
+            attributes "Class-Path": configurations.runtime.files.collect {
+                it.toURL().toString().replaceAll(' ', '%20') //.replaceFirst(/file:/+/, '/')
+            }.join(' ')
+        }
+    }
+}
+ 
 bootRun {
+    dependsOn pathingJarForWindows
+    doFirst {
+		logger.error('pathingJarForWindows.archivePath=' + pathingJarForWindows.archivePath)
+        classpath = files("$buildDir/classes/main", "$buildDir/resources/main", pathingJarForWindows.archivePath)
+    }
     jvmArgs('-Dspring.output.ansi.enabled=always')
     addResources = true
 }
