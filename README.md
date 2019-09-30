@@ -19,12 +19,21 @@ $ sudo easy_install pip
 $ sudo pip install -I ansible==2.7.0
 ```
 
-Then install vagrant for Debian/Ubuntu:
+Then install vagrant:
+
+For APT/Debian/Ubuntu:
 ```
 $ sudo apt-get install virtualbox virtualbox-dkms virtualbox-qt
 $ cd ~/Downloads
 $ wget https://releases.hashicorp.com/vagrant/2.0.4/vagrant_2.0.4_x86_64.deb
 $ sudo dpkg -i vagrant_2.0.4_x86_64.deb
+$ vagrant plugin install vagrant-disksize
+```
+
+For OSX:
+```
+Install https://www.virtualbox.org/wiki/Downloads for OS X hosts e.g. 
+Install https://www.vagrantup.com/downloads.html for macOS e.g. https://releases.hashicorp.com/vagrant/2.0.4/vagrant_2.0.4_x86_64.dmg
 $ vagrant plugin install vagrant-disksize
 ```
 
@@ -136,6 +145,8 @@ $ cd ~/phylolink
 $ grails run-app -port=8090
 ```
 * View http://devt.ala.org.au:8090/phylolink in a browser to test the application which is running the grails part of the application locally and consuming the web services and postgres db running in the vagrant container.
+
+* NOTE: if you view https://doi-test.ala.org.au you may get the "An unexpected error has occurred" message.  This can occur if you are currently logged in to any of the production ala websites e.g. https://www.ala.org.au, https://phylolink.ala.org.au, https://doi.ala.org.au, etc.  So either log out of production, or use a separate incognito/private browser window.
 
 ## Installing on production
 ```
