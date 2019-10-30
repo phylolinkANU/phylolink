@@ -84,6 +84,19 @@ $ sudo systemctl start phylolink
 $ sudo systemctl status phylolink
 ```
 
+After halting and starting the vagrant container you may find that web2py doesn't start, resulting in the inability to add a new phylogenetic tree.  To fix this:
+```
+$ sudo vim /etc/init.d/web2py
+	In the do_start() function, comment out the following 2 lines by inserting # at the start of the lines
+		start-stop-daemon --stop --test --quiet --pidfile $PIDFILE \
+			&& return 1
+	save and exit vi (:x)
+$ sudo systemctl daemon-reload
+$ sudo systemctl start web2py
+$ sudo systemctl status web2py
+	Should report that the service is "active (running)"
+```
+
 ### Connecting to the phyolink postgres db
 
 Install a postgres client on your machine e.g. https://www.pgadmin.org/
@@ -111,6 +124,11 @@ View http://phylolink.vagrant1.ala.org.au in a browser.  For the standard ansibl
 $ sudo systemctl status phylolink
 ```
 
+You can now exit from the vagrant container secure shell with the command:
+```
+$ exit
+```
+
 ### Running phylolink from an IDE for rapid development
 
 * Clone phylolink from GitHub e.g. 
@@ -126,7 +144,7 @@ $ git clone https://github.com/AtlasOfLivingAustralia/phylolink.git
 * Create the following directory structure: ```/data/phylolink/config```
 * Copy all files in ~/ala-install/ansible/roles/phylolink/templates to /data/phylolink/config and substitute the variable values (speak to someone from the development team)
 * Install the name index by 
-  * Download the latest names index file from http://biocache.ala.org.au/archives/nameindexes/ (At the time of writing the latest one was 20190213/namematching-20190213.tgz)
+  * Download the version of the names index as specified in the nameindex_datestamp property in ~/ala-install/ansible/inventories/vagrant/phylolink-vagrantfile from https://archives.ala.org.au/archives/nameindexes (At the time of writing the value was 20171012-lucene5 so the URL to download from is https://archives.ala.org.au/archives/nameindexes/20171012-lucene5/namematching-20171012-lucene5.tgz)
   * Unzip it to /data/lucene/namematching so that you end up with the cb, id, irmng and vernacular sub folders
   * NOTE: the name.index.location property in /data/phylolink/config/phylolink-config.properties must match the /data/lucene/namematching folder name
 * Add a hosts file entry: 127.0.0.1    devt.ala.org.au
@@ -134,6 +152,10 @@ $ git clone https://github.com/AtlasOfLivingAustralia/phylolink.git
 ```
 $ cd ~/phylolink
 $ grails run-app -port=8090
+```
+* To be able to view the emails sent during the approval workflow, you will have a local mail server. The config.groovy is set up to point at a mail server on port 1025. https://nilhcem.github.io/FakeSMTP/download.html is a good option, which can be run with the following command in a different terminal to terminal where you are running grails:
+```
+java -jar ~/fakeSMTP-2.0.jar --start-server --port 1025
 ```
 * View http://devt.ala.org.au:8090/phylolink in a browser to test the application which is running the grails part of the application locally and consuming the web services and postgres db running in the vagrant container.
 
