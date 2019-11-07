@@ -32,7 +32,10 @@ class CharactersService {
 				}
 			}
 			if (!found) {
-				lists.add(Characters.findById(initCharacterResourceId))
+				Characters characters = Characters.findById(initCharacterResourceId);
+				if (characters != null) {
+					lists.add(characters)
+				}
 			}
 		}		
         getCharUrl(lists);

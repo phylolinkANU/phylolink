@@ -58,7 +58,7 @@ class UserService {
 	public List<String> getPhylolinkWorkflowAdminEmailRecipients() throws Exception {
 		List<String> recipients = new ArrayList<>()
 		try {
-			def url = grailsApplication.config.security.cas.casServerName + "/userdetails/userdetails/byrole?role=" + getPhylolinkWorkflowAdminRole()
+			def url = grailsApplication.config.security.cas.casServerName + "/userdetails/userDetails/byRole?role=" + getPhylolinkWorkflowAdminRole()
 			//NOTE: this is secured by IP whitelisting so the external IP of the environment the grails app is running on will need to be added to
 			//      the list of Authorised Services by someone in the development team
 			def userList = webServiceService.doJsonPost(url, "{}")?.data
@@ -73,12 +73,12 @@ class UserService {
 
 		} catch (Exception e) {
 			if (Environment.isDevelopmentMode()) {
-				log.error("IGNORING exception while trying to getPhylolinkWorkflowAdminEmailRecipients recipients=" + recipients, ignored)
 				recipients.add(new InternetAddress("renee.catullo@csiro.au", "Renee Catullo").toString())
 				recipients.add(new InternetAddress("jasen.schremmer@anu.edu.au", "O'Schremmer, Jasen").toString())
 			} else {
-				throw e
+				recipients.add(new InternetAddress("support@ala.org.au", "ALA Support - Error in Phylolink Logs").toString())
 			}
+			log.error("IGNORING exception while trying to getPhylolinkWorkflowAdminEmailRecipients and sending to these recipients instead=" + recipients, e)
 		}
 		return recipients
     }
